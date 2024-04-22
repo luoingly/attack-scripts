@@ -67,8 +67,7 @@ class MD5:
         length = pack('<Q', len(msg) * 8)
 
         msg += b'\x80'
-        msg += b'\x00' * (64 - len(msg)) if 56 < len(msg) < 64 else b''
-        msg += b'\x00' * (56 - len(msg) % 64)
+        msg += b'\x00' * ((56 - len(msg)) % 64)
         msg += length
 
         return msg
