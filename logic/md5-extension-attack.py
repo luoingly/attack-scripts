@@ -58,6 +58,7 @@ class MD5:
 
     def extend(self, msg: bytes) -> None:
         # extend the hash with a new message (padded)
+        assert len(msg) % 64 == 0
         for i in range(0, len(msg), 64):
             self.update(msg[i:i + 64])
 
@@ -77,7 +78,7 @@ class MD5:
         return pack('<IIII', self.A, self.B, self.C, self.D)
 
 
-def verify_md5() -> None:
+def verify_md5(test_string: str | None = None) -> None:
     # (DEBUG function) verify the MD5 implementation
     from hashlib import md5 as md5_hashlib
 
@@ -86,10 +87,10 @@ def verify_md5() -> None:
         md5.extend(md5.padding(msg))
         return md5.digest()
 
-    test_string = input("Input a string: ").strip().encode()
+    manual_result = md5_manual(test_string).hex()
+    hashlib_result = md5_hashlib(test_string).hexdigest()
 
-    print("Manual: ", md5_manual(test_string).hex())
-    print("Hashlib:", md5_hashlib(test_string).hexdigest())
+    assert manual_result == hashlib_result, "Test failed!"
 
 
 def attack(message_len: int, known_hash: str,
