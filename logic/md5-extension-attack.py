@@ -77,7 +77,7 @@ class MD5:
         return pack('<IIII', self.A, self.B, self.C, self.D)
 
 
-def verify_md5(test_string: str | None = None) -> None:
+def verify_md5(test_string: bytes) -> None:
     # (DEBUG function) verify the MD5 implementation
     from hashlib import md5 as md5_hashlib
 
