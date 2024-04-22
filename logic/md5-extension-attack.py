@@ -92,31 +92,29 @@ def verify_md5() -> None:
     print("Hashlib:", md5_hashlib(test_string).hexdigest())
 
 
-def attack(known_text: bytes, known_hash: str,
-           append_str: bytes, key_len: int) -> tuple:
+def attack(message_len: int, known_hash: str,
+           append_str: bytes) -> tuple:
     # MD5 extension attack
     md5 = MD5()
 
-    previous_text = md5.padding(b"*" * key_len + known_text)
+    previous_text = md5.padding(b"*" * message_len)
     current_text = previous_text + append_str
 
     md5.A, md5.B, md5.C, md5.D = unpack("<IIII", bytes.fromhex(known_hash))
     md5.extend(md5.padding(current_text)[len(previous_text):])
 
-    return current_text[key_len:], md5.digest().hex()
+    return current_text[message_len:], md5.digest().hex()
 
 
 if __name__ == '__main__':
 
-    known_text = input("[>] Input known text: ").strip().encode()
+    message_len = int(input("[>] Input known text length: "))
     known_hash = input("[>] Input known hash: ").strip()
     append_text = input("[>] Input append text: ").strip().encode()
-    key_len = int(input("[>] Input key length: "))
 
     print("[*] Attacking...")
 
-    extend_str, final_hash = attack(
-        known_text, known_hash, append_text, key_len)
+    extend_str, final_hash = attack(message_len, known_hash, append_text)
 
     from urllib.parse import quote
     from base64 import b64encode
